@@ -1,20 +1,24 @@
 import React from 'react'
 import './SearchBar.css'
 
-
-
 class SearchBar extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       term:'',
       location:'',
-      sortBy:'best_match'
+      sortBy:'best_match',
+      searchButton:`Let's go!`
     }
     this.sortByOptions = {
       'Best Match': 'best_match',
       'Highest Rated': 'rating',
       'Most Reviewed': 'review_count'
+    }
+    this.searchButtonText = {
+      0: `Search again?`,
+      1: `Other search?`,
+      2: `One more time?`
     }
     this.handleTermChange = this.handleTermChange.bind(this)
     this.handleSortByChange = this.handleSortByChange.bind(this)
@@ -52,8 +56,31 @@ class SearchBar extends React.Component {
   }
 
   handleSearch(event) {
+    this.setState({
+      location: event.target.text
+    })
+  }
+
+  changeSearchButtonText(event) {
+    const randomizer = () => Math.round(Math.random()*2)
+    let randomNumber = randomizer()
+    while (this.searchButtonText[randomNumber] === this.state.searchButton) {
+      randomNumber = randomizer()
+    }
+    this.setState({
+      searchButton:this.searchButtonText[randomNumber]
+    })
+    event.preventDefault()
+  }
+
+  handleSearchYelp(event) {
     this.props.searchYelp(this.state.term, this.state.location, this.state.sortBy)
     event.preventDefault()
+  }
+
+  handleSearch(event) {
+    this.changeSearchButtonText(event)
+    this.handleSearchYelp(event)
   }
 
   render() {
@@ -69,8 +96,8 @@ class SearchBar extends React.Component {
         <input onChange={this.handleLocationChange} placeholder="Where?" />
       </div>
         <div className="SearchBar-submit">
-        <a onClick={this.handleSearch}>Let's Go</a>
-      </div>
+          <a onClick={this.handleSearch}>{this.state.searchButton}</a>
+        </div>
     </div>
     )
   }
